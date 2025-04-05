@@ -11,6 +11,7 @@
 
   <section>
     <h2>Cadastrar Cliente</h2>
+    <p>Preencha os dados do cliente:</p>
     <input type="text" id="nomeCliente" placeholder="Nome">
     <input type="text" id="enderecoCliente" placeholder="Endereço">
     <button onclick="cadastrarCliente()">Cadastrar Cliente</button>
@@ -18,37 +19,46 @@
 
   <section>
     <h2>Cadastrar Construtora</h2>
-    <p> Indique o nome da construtora</p>
+    <p>Indique o nome da construtora:</p>
     <input type="text" id="nomeConstrutora" placeholder="Nome">
-    <p> Indique o CNPJ</p>
+    <p>Indique o CNPJ:</p>
     <input type="text" id="cnpjConstrutora" placeholder="CNPJ">
-    <p> Indique O custo da mão de Obra em valor / hora</p>
+    <p>Indique o custo da mão de obra (R$/hora):</p>
     <input type="number" id="maoDeObra" placeholder="Custo da Mão de Obra">
-    <P> Indique O prazo padrão para um projeto em dias</P>
+    <p>Indique o prazo padrão para um projeto (em dias):</p>
     <input type="number" id="prazo" placeholder="Prazo do Projeto (dias)">
     <button onclick="cadastrarConstrutora()">Cadastrar Construtora</button>
   </section>
 
   <section>
     <h2>Cadastrar Projeto</h2>
-    <p> Selecione o nome do cliente</p>
-    <select id="selectCliente"></select>
-    <p> Selecione a Construtora</p>
-    <select id="selectConstrutora"></select>
-    <p> Selecione o tipo de projeto</p>
+    <p>Escolha o cliente:</p>
+    <select id="selectCliente">
+      <option value="">Selecione um cliente</option>
+    </select>
+
+    <p>Escolha a construtora:</p>
+    <select id="selectConstrutora">
+      <option value="">Selecione uma construtora</option>
+    </select>
+
+    <p>Escolha o tipo de projeto:</p>
     <select id="tipoProjeto">
       <option value="Construção">Construção</option>
       <option value="Reforma">Reforma</option>
       <option value="Extensão">Extensão</option>
     </select>
-    <p> Selecione o tipo de local do projeto</p>
+
+    <p>Escolha o local de execução do projeto:</p>
     <select id="localProjeto">
       <option value="Casa">Casa</option>
       <option value="Apartamento">Apartamento</option>
       <option value="Sitio">Sítio</option>
     </select>
-    <p> Selecione a data de início do projeto</p>
+
+    <p>Informe a data de início do projeto:</p>
     <input type="date" id="dataInicio">
+
     <button onclick="gerarCusto()">Gerar Custo</button>
     <button onclick="gerarPrazo()">Gerar Prazo</button>
     <button onclick="gerarRelatorio()">Relatório</button>

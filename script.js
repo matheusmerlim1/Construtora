@@ -1,116 +1,146 @@
-let clientes = [];
-let construtoras = [];
-
 function cadastrarCliente() {
-    const nome = document.getElementById("nomeCliente").value;
-    const endereco = document.getElementById("enderecoCliente").value;
+    const nome = document.getElementById("nomeCliente").value.trim();
+    const endereco = document.getElementById("enderecoCliente").value.trim();
   
     if (!nome || !endereco) {
-      alert("Preencha todos os campos do cliente.");
+      alert("Preencha todos os campos do cliente antes de cadastrar.");
       return;
     }
   
+    const selectCliente = document.getElementById("selectCliente");
     const option = document.createElement("option");
     option.text = nome;
     option.value = nome;
-    document.getElementById("selectCliente").add(option);
+    option.selected = true;
+    selectCliente.add(option);
   
-    resetCamposCliente();
+    document.getElementById("nomeCliente").value = "";
+    document.getElementById("enderecoCliente").value = "";
+  
     alert("Cliente cadastrado com sucesso!");
   }
   
   function cadastrarConstrutora() {
-    const nome = document.getElementById("nomeConstrutora").value;
-    const cnpj = document.getElementById("cnpjConstrutora").value;
-    const maoDeObra = document.getElementById("maoDeObra").value;
-    const prazo = document.getElementById("prazo").value;
+    const nome = document.getElementById("nomeConstrutora").value.trim();
+    const cnpj = document.getElementById("cnpjConstrutora").value.trim();
+    const maoDeObra = parseFloat(document.getElementById("maoDeObra").value.trim());
+    const prazo = parseInt(document.getElementById("prazo").value.trim());
   
-    if (!nome || !cnpj || !maoDeObra || !prazo) {
-      alert("Preencha todos os campos da construtora.");
+    // Verifica se todos os campos estão preenchidos
+    if (!nome || !cnpj || isNaN(maoDeObra) || isNaN(prazo)) {
+      alert("Preencha todos os campos da construtora corretamente antes de cadastrar.");
       return;
     }
   
+    // Verifica se mão de obra e prazo são positivos
+    if (maoDeObra <= 0 || prazo <= 0) {
+      alert("O custo da mão de obra e o prazo devem ser maiores que zero.");
+      return;
+    }
+  
+    const selectConstrutora = document.getElementById("selectConstrutora");
     const option = document.createElement("option");
     option.text = nome;
     option.value = JSON.stringify({ nome, cnpj, maoDeObra, prazo });
-    document.getElementById("selectConstrutora").add(option);
+    option.selected = true;
+    selectConstrutora.add(option);
   
-    resetCamposConstrutora();
-    alert("Construtora cadastrada com sucesso!");
-  }
-  
-  // 🧼 Funções para limpar os campos
-  function resetCamposCliente() {
-    document.getElementById("nomeCliente").value = "";
-    document.getElementById("enderecoCliente").value = "";
-  }
-  
-  function resetCamposConstrutora() {
+    // Limpa os campos
     document.getElementById("nomeConstrutora").value = "";
     document.getElementById("cnpjConstrutora").value = "";
     document.getElementById("maoDeObra").value = "";
     document.getElementById("prazo").value = "";
+  
+    alert("Construtora cadastrada com sucesso!");
+  }
+    
+  function validarCamposProjeto() {
+    const cliente = document.getElementById("selectCliente").value;
+    const construtora = document.getElementById("selectConstrutora").value;
+    const tipo = document.getElementById("tipoProjeto").value;
+    const local = document.getElementById("localProjeto").value;
+    const dataInicio = document.getElementById("dataInicio").value;
+  
+    if (!cliente || !construtora || !tipo || !local || !dataInicio) {
+      alert("Preencha todos os campos do projeto antes de continuar.");
+      return false;
+    }
+  
+    return true;
   }
   
-
-function atualizarClientes() {
-  const select = document.getElementById("selectCliente");
-  select.innerHTML = "";
-  clientes.forEach((c, i) => {
-    const option = document.createElement("option");
-    option.value = i;
-    option.text = `${c.nome} - ${c.endereco}`;
-    select.appendChild(option);
-  });
-}
-
-
-function atualizarConstrutoras() {
-  const select = document.getElementById("selectConstrutora");
-  select.innerHTML = "";
-  construtoras.forEach((c, i) => {
-    const option = document.createElement("option");
-    option.value = i;
-    option.text = `${c.nome} - ${c.cnpj}`;
-    select.appendChild(option);
-  });
-}
-
-function gerarCusto() {
-  const local = document.getElementById("localProjeto").value;
-  const tipo = document.getElementById("tipoProjeto").value;
-  const construtora = construtoras[document.getElementById("selectConstrutora").value];
-  let base = 0;
-  if (local === "Casa") base = 1000;
-  else if (local === "Apartamento") base = 800;
-  else if (local === "Sitio") base = 1200;
-
-  let fator = tipo === "Construção" ? 4 : tipo === "Reforma" ? 3 : 5;
-  const custo = base * fator * construtora.custo;
-  alert(`Custo estimado: R$ ${custo.toFixed(2)}`);
-}
-
-function gerarPrazo() {
-  const prazo = construtoras[document.getElementById("selectConstrutora").value].prazo;
-  const inicio = new Date(document.getElementById("dataInicio").value);
-  const fim = new Date(inicio);
-  fim.setDate(fim.getDate() + prazo);
-  alert(`Data prevista de término: ${fim.toLocaleDateString()}`);
-}
-
-function gerarRelatorio() {
-  const cliente = clientes[document.getElementById("selectCliente").value];
-  const construtora = construtoras[document.getElementById("selectConstrutora").value];
-  const tipo = document.getElementById("tipoProjeto").value;
-  const local = document.getElementById("localProjeto").value;
-  const dataInicio = document.getElementById("dataInicio").value;
-  const relatorio = `
-    <h3>Relatório do Projeto</h3>
-    <p><strong>Cliente:</strong> ${cliente.nome}</p>
-    <p><strong>Construtora:</strong> ${construtora.nome}</p>
-    <p><strong>Tipo:</strong> ${tipo}</p>
-    <p><strong>Local:</strong> ${local}</p>
-    <p><strong>Data de Início:</strong> ${new Date(dataInicio).toLocaleDateString()}</p>
-  `;
-  document.getElementById("relatorio").innerHTML = relatorio;
-}
+  function gerarCusto() {
+    if (!validarCamposProjeto()) return;
+  
+    const local = document.getElementById("localProjeto").value;
+    const tipo = document.getElementById("tipoProjeto").value;
+    const construtoraData = JSON.parse(document.getElementById("selectConstrutora").value);
+    const maoDeObra = parseFloat(construtoraData.maoDeObra);
+  
+    let base = 0;
+    if (local === "Casa") base = 1000;
+    else if (local === "Apartamento") base = 800;
+    else if (local === "Sitio") base = 1200;
+  
+    if (tipo === "Reforma") base *= 3;
+    else if (tipo === "Construção") base *= 4;
+    else if (tipo === "Extensão") base *= 5;
+  
+    const custo = base * maoDeObra;
+    alert(`Custo estimado do projeto: R$ ${custo.toFixed(2)}`);
+  }
+  
+  function gerarPrazo() {
+    if (!validarCamposProjeto()) return;
+  
+    const prazo = JSON.parse(document.getElementById("selectConstrutora").value).prazo;
+    const dataInicio = new Date(document.getElementById("dataInicio").value);
+    dataInicio.setDate(dataInicio.getDate() + parseInt(prazo));
+  
+    alert("Data estimada de término: " + dataInicio.toLocaleDateString("pt-BR"));
+  }
+  
+  function gerarRelatorio() {
+    if (!validarCamposProjeto()) return;
+  
+    const cliente = document.getElementById("selectCliente").value;
+    const construtora = JSON.parse(document.getElementById("selectConstrutora").value);
+    const tipo = document.getElementById("tipoProjeto").value;
+    const local = document.getElementById("localProjeto").value;
+    const dataInicioInput = document.getElementById("dataInicio").value;
+    const dataInicio = new Date(dataInicioInput);
+  
+    // Cálculo do custo
+    let base = 0;
+    if (local === "Casa") base = 1000;
+    else if (local === "Apartamento") base = 800;
+    else if (local === "Sitio") base = 1200;
+  
+    if (tipo === "Reforma") base *= 3;
+    else if (tipo === "Construção") base *= 4;
+    else if (tipo === "Extensão") base *= 5;
+  
+    const custo = base * parseFloat(construtora.maoDeObra);
+  
+    // Cálculo da data de término
+    const prazo = parseInt(construtora.prazo);
+    const dataTermino = new Date(dataInicio);
+    dataTermino.setDate(dataInicio.getDate() + prazo);
+  
+    // Montagem do relatório
+    const relatorio = `
+      <h3>Relatório do Projeto</h3>
+      <p><strong>Cliente:</strong> ${cliente}</p>
+      <p><strong>Construtora:</strong> ${construtora.nome}</p>
+      <p><strong>CNPJ:</strong> ${construtora.cnpj}</p>
+      <p><strong>Tipo de Projeto:</strong> ${tipo}</p>
+      <p><strong>Local do Projeto:</strong> ${local}</p>
+      <p><strong>Data de Início:</strong> ${dataInicio.toLocaleDateString("pt-BR")}</p>
+      <p><strong>Data Estimada de Término:</strong> ${dataTermino.toLocaleDateString("pt-BR")}</p>
+      <p><strong>Custo Estimado:</strong> R$ ${custo.toFixed(2)}</p>
+    `;
+  
+    document.getElementById("relatorio").innerHTML = relatorio;
+  }
+  
+  
